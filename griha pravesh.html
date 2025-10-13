@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Griha Pravesam Interactive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Tiro+Devanagari+Sanskrit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: contain;
+            font-size: clamp(18px, 1.6vw, 22px);
+            line-height: 1.75;
+            letter-spacing: 0.01em;
+        }
+        .mantra {
+            font-family: 'Tiro Devanagari Sanskrit', serif;
+            font-size: clamp(42px, 5vw, 64px);
+        }
+        .step-container {
+            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .step {
+            min-width: 100%;
+            flex-shrink: 0;
+        }
+        .step-content {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            box-shadow: 0 24px 60px -18px rgba(120, 53, 15, 0.25);
+            border: 1px solid rgba(120, 53, 15, 0.12);
+        }
+        .step-title {
+            font-size: clamp(2.3rem, 3vw, 3.2rem);
+        }
+        .step-text {
+            font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+        }
+        /* Hide scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .progress-item[aria-current="true"] {
+            box-shadow: inset 0 0 0 2px rgba(120, 53, 15, 0.85);
+        }
+        .progress-item:focus-visible {
+            outline: 3px solid rgba(234, 179, 8, 0.8);
+            outline-offset: 3px;
+        }
+        .nav-button {
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .nav-button:active {
+            transform: scale(0.95);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .step-container {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-amber-100 to-amber-200 text-amber-900 h-screen w-screen overflow-hidden flex flex-col antialiased">
+
+    <!-- Main Container -->
+    <main id="main-container" class="flex-grow flex flex-col h-full overflow-hidden relative">
+
+        <!-- Progress Bar -->
+        <div class="w-full px-4 pt-6 md:px-10 z-10">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                    <h1 class="text-base md:text-lg font-semibold tracking-wide uppercase text-amber-700">Griha Pravesam Interactive Guide</h1>
+                    <p class="text-sm md:text-base text-amber-700/90">Follow each step calmly. Swipe, use arrow keys, or tap the buttons to navigate.</p>
+                </div>
+                <div id="step-counter" class="rounded-full bg-amber-900/10 px-4 py-2 text-sm md:text-base font-semibold text-amber-900 tracking-wide text-center" role="status" aria-live="polite"></div>
+            </div>
+            <div id="progress-container" class="mt-4 flex overflow-x-auto gap-2 pb-2 no-scrollbar" aria-label="Step navigator">
+                <!-- Progress buttons inserted here by JS -->
+            </div>
+        </div>
+
+        <!-- Steps Carousel -->
+        <div id="steps-carousel" class="flex-grow flex items-center justify-center overflow-hidden w-full px-3 pb-20 md:px-12">
+            <div id="step-container" class="flex h-full w-full">
+                <!-- Steps will be inserted here by JS -->
+            </div>
+        </div>
+
+    </main>
+    
+    <!-- Navigation Arrows -->
+    <div class="absolute inset-0 flex items-center justify-between px-4 md:px-8 z-20 pointer-events-none">
+        <button id="prev-btn" class="nav-button bg-amber-900/20 hover:bg-amber-900/30 text-amber-900 rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center pointer-events-auto opacity-0 invisible transition-opacity shadow-lg focus-visible:outline focus-visible:outline-amber-500 focus-visible:outline-offset-4" aria-label="Previous step">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <button id="next-btn" class="nav-button bg-amber-900 hover:bg-amber-800 text-amber-50 rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center pointer-events-auto shadow-xl focus-visible:outline focus-visible:outline-amber-500 focus-visible:outline-offset-4" aria-label="Next step">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        </button>
+    </div>
+
+    <div class="pointer-events-none absolute bottom-4 inset-x-0 flex justify-center px-6">
+        <div class="pointer-events-auto bg-white/80 backdrop-blur-sm text-amber-900 text-sm md:text-base px-4 py-2 rounded-full shadow-md border border-amber-900/10 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <span class="flex items-center gap-2"><span class="inline-flex h-3 w-3 rounded-full bg-amber-800"></span>Current step</span>
+            <span>Swipe ◀ ▶ • Arrow keys • Tap buttons</span>
+        </div>
+    </div>
+
+
+    <script>
+        const pujaSteps = [
+            // --- Welcome ---
+            { part: "Welcome", title: "Griha Pravesam Guide", instruction: "This complete guide will walk you through your housewarming ceremony. Swipe or use the arrows to move to the next step when you are ready." },
+            
+            // --- Part 1: Preparation ---
+            { part: "Part 1: Preparation", title: "Set the Muhurta", instruction: "Ensure you have fixed an auspicious date and time (Muhurta) for entering the house." },
+            { part: "Part 1: Preparation", title: "Prepare the House", instruction: "The house should be clean, with only fixed items present. Decorate the main entrance with mango leaves, flowers, and a beautiful Rangoli." },
+            { part: "Part 1: Preparation", title: "Gather Puja Materials", instruction: "Arrange all your puja materials so they are easily accessible during the ceremony." },
+            
+            // --- Part 2: Entering the Home ---
+            { part: "Part 2: Entering the Home", title: "Assemble at the Entrance", instruction: "Gather the family outside the front door 15-20 minutes before the Muhurta. The lady of the house leads, carrying the Kalasam." },
+            
+            // --- Lakshmi Puja (16 Steps) ---
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja: Preliminaries", instruction: "At the main doorstep, begin the Lakshmi Puja. Perform Gurudhyanam, Ganapathi Dhyanam, Aachamanam, Praanayamam, and make the Samkalpam (vow)." },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (1/16): Dhyanam", instruction: "Meditate on the Goddess.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः ध्यायामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (2/16): Aavahanam", instruction: "Invite the Goddess.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः आवाहयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (3/16): Aasanam", instruction: "Offer a flower as a seat.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः आसनार्थे पुष्पाणि समर्पयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (4/16): Paadyam", instruction: "Offer water to wash the feet.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः पादयोः पाद्यं समर्पयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (5/16): Arghyam", instruction: "Offer water to wash the hands.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः हस्तयोः अर्घ्यं समर्पयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (6/16): Aachamaneeyam", instruction: "Offer water to sip.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः आचमनीयं समर्पयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (7/16): Panchaamrutha Snaanam", instruction: "Bathe with Panchaamrutham.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः पञ्चामृतस्नानं समर्पयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (8/16): Shuddhodaka Snaanam", instruction: "Bathe with pure water.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः शुद्धोदकस्नानं समर्पयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (9/16): Vastram", instruction: "Offer new clothes (or Akshatas).", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः वस्त्रार्थे अक्षतान् समर्पयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (10/16): Gandham", instruction: "Offer sandalwood paste.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः गन्धान् धारयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (11/16): Akshathaan", instruction: "Offer Akshatas.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः अक्षतान् समर्पयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (12/16): Pushpam", instruction: "Offer flowers.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः पुष्पैः पूजयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (13/16): Dhoopam", instruction: "Show incense.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः धूपं आघ्रापयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (14/16): Deepam", instruction: "Show the lamp.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः दीपं दर्शयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (15/16): Naivedyam", instruction: "Offer prasad.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः नैवेद्यं निवेदयामि" },
+            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (16/16): Neerajanam", instruction: "Offer camphor flame (Aarathi).", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः नीराजनं समर्पयामि" },
+            
+            { part: "Part 2: Entering the Home", title: "The Grand Entry", instruction: "Exactly at the auspicious moment (Muhurta), enter the house with your right foot first and proceed to the kitchen." },
+            
+            // --- Part 3: The Kitchen Ritual ---
+            { part: "Part 3: The Kitchen Ritual", title: "Set up the Stove", instruction: "Place the stove in the southeast corner, positioned to face East. Decorate it." },
+            { part: "Part 3: The Kitchen Ritual", title: "Lighting the Sacred Fire", instruction: "The lady of the house should light the stove while chanting the full Agni Mantram.", mantra: "अग्निं दूतं वृणीमहे होतारं विश्ववेदसम् । अस्य यज्ञस्य सुक्रतुम् ॥ रां रीं रूं रैं रौं रः रमलवरयूं अग्निमण्डलाय नमः अग्निं आवहयामि ॥" },
+            { part: "Part 3: The Kitchen Ritual", title: "Place Vessel on Stove", instruction: "Place a new vessel on the stove while chanting the full Soorya Mantram.", mantra: "आ सत्येन रजसा वर्तमानो निवेशयन्नमृतं मर्त्यं च । हिरण्ययेन सविता रथेना देवो याति भुवनानि पश्यन् ॥ ह्रां ह्रीं ह्रूं ह्रैं ह्रौं ह्रः ह्रमलवरयूं सूर्याय नमः सूर्यं आवहयामि ॥" },
+            { part: "Part 3: The Kitchen Ritual", title: "Pouring the Milk", instruction: "Pour fresh milk into the vessel while chanting the full Soma (Chandra) Mantram.", mantra: "आप्यायस्व समेतु ते विश्वतः सोम वृष्णियम् । भवा वाजस्य संगथे ॥ सां सीं सूं सैं सौं सः समलवरयूं सोममण्डलाय नमः चन्द्रं आवहयामि ॥" },
+            { part: "Part 3: The Kitchen Ritual", title: "Boil & Overflow", instruction: "Allow the milk to boil and overflow. This signifies overflowing prosperity. Add rice or jaggery, offer to the deities, and distribute as prasad." },
+            
+            // --- Part 4: Puja Inside the House ---
+            { part: "Part 4: Puja Inside the House", title: "Set up the Puja Area", instruction: "In the northeast corner, set up a pedestal with the icons of the deities, primarily Lord Ganesha." },
+
+            // --- Ganapati Puja (16 Steps) ---
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (1/16): Dhyanam", instruction: "Meditate on the Lord.", mantra: "ॐ श्री महागणाधिपतये नमः ध्यायामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (2/16): Aavahanam", instruction: "Invite the Lord.", mantra: "ॐ श्री महागणाधिपतये नमः आवाहयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (3/16): Aasanam", instruction: "Offer a flower as a seat.", mantra: "ॐ श्री महागणाधिपतये नमः आसनार्थे पुष्पाणि समर्पयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (4/16): Paadyam", instruction: "Offer water to wash the feet.", mantra: "ॐ श्री महागणाधिपतये नमः पादयोः पाद्यं समर्पयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (5/16): Arghyam", instruction: "Offer water to wash the hands.", mantra: "ॐ श्री महागणाधिपतये नमः हस्तयोः अर्घ्यं समर्पयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (6/16): Aachamaneeyam", instruction: "Offer water to sip.", mantra: "ॐ श्री महागणाधिपतये नमः आचमनीयं समर्पयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (7/16): Panchaamrutha Snaanam", instruction: "Bathe with Panchaamrutham.", mantra: "ॐ श्री महागणाधिपतये नमः पञ्चामृतस्नानं समर्पयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (8/16): Shuddhodaka Snaanam", instruction: "Bathe with pure water.", mantra: "ॐ श्री महागणाधिपतये नमः शुद्धोदकस्नानं समर्पयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (9/16): Vastram", instruction: "Offer new clothes (or Akshatas).", mantra: "ॐ श्री महागणाधिपतये नमः वस्त्रार्थे अक्षतान् समर्पयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (10/16): Gandham", instruction: "Offer sandalwood paste.", mantra: "ॐ श्री महागणाधिपतये नमः गन्धान् धारयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (11/16): Akshathaan", instruction: "Offer Akshatas.", mantra: "ॐ श्री महागणाधिपतये नमः अक्षतान् समर्पयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (12/16): Pushpam", instruction: "Offer flowers.", mantra: "ॐ श्री महागणाधिपतये नमः पुष्पैः पूजयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (13/16): Dhoopam", instruction: "Show incense.", mantra: "ॐ श्री महागणाधिपतये नमः धूपं आघ्रापयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (14/16): Deepam", instruction: "Show the lamp.", mantra: "ॐ श्री महागणाधिपतये नमः दीपं दर्शयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (15/16): Naivedyam", instruction: "Offer prasad.", mantra: "ॐ श्री महागणाधिपतये नमः नैवेद्यं निवेदयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (16/16): Neerajanam", instruction: "Offer camphor flame (Aarathi).", mantra: "ॐ श्री महागणाधिपतये नमः नीराजनं समर्पयामि" },
+            { part: "Part 4: Puja Inside the House", title: "Navagraha Puja (Optional)", instruction: "You may now perform a simple Navagraha puja by chanting the basic mantras for each of the nine planets." },
+
+            // --- Part 5: Concluding the Ceremony ---
+            { part: "Part 5: Concluding", title: "Dispelling Negative Energy", instruction: "Take a coconut or pumpkin and move it clockwise (3 times) around the exit door frames while chanting.", mantra: "ॐ ह्रीं सर्व विघ्न कृद्भ्यो सर्व भूतेभ्यो हुं फट् स्वाहा ॥" },
+            { part: "Part 5: Concluding", title: "Break the Coconut", instruction: "After chanting, take the coconut/pumpkin outside and break it. Do not bring the broken pieces back inside." },
+            { part: "Part 5: Concluding", title: "Final Steps", instruction: "Sprinkle holy water from the Kalasam in all rooms. Conclude with a final Aarathi and enjoy the prasad with your family." },
+            { part: "Congratulations!", title: "Puja Complete!", instruction: "Congratulations on your new home! May it be filled with peace, prosperity, and happiness. It is auspicious to stay in the new house overnight." },
+        ];
+
+        let currentStep = 0;
+        const stepContainer = document.getElementById('step-container');
+        const progressContainer = document.getElementById('progress-container');
+        const stepCounter = document.getElementById('step-counter');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+
+        function renderSteps() {
+            stepContainer.innerHTML = '';
+            progressContainer.innerHTML = '';
+            pujaSteps.forEach((step, index) => {
+                const stepEl = document.createElement('div');
+                stepEl.className = 'step w-full h-full flex flex-col justify-center items-center px-2 py-8 md:py-12';
+                stepEl.innerHTML = `
+                    <article class="step-content max-w-3xl w-full p-6 md:p-10 text-left">
+                        <p class="text-sm md:text-base font-semibold text-amber-600 mb-4 tracking-wide uppercase">${step.part}</p>
+                        <h2 class="step-title font-bold text-amber-900 mb-6">${step.title}</h2>
+                        <p class="step-text text-amber-800 mb-6">${step.instruction}</p>
+                        ${step.mantra ? `<div class="bg-amber-100/90 p-6 md:p-8 rounded-2xl shadow-inner border border-amber-900/10">
+                                            <p class="mantra text-amber-900 leading-snug text-center">${step.mantra}</p>
+                                         </div>` : ''}
+                    </article>
+                `;
+                stepContainer.appendChild(stepEl);
+
+                const progressButton = document.createElement('button');
+                progressButton.type = 'button';
+                progressButton.className = 'progress-item flex-shrink-0 flex items-center gap-2 rounded-full px-3 py-2 bg-amber-50 text-xs md:text-sm text-amber-800 font-semibold border border-amber-900/10 shadow-sm transition-colors hover:bg-amber-200/70 focus:outline-none';
+                progressButton.dataset.index = index;
+                progressButton.setAttribute('aria-label', `Go to step ${index + 1}: ${step.title}`);
+                progressButton.innerHTML = `
+                    <span class="inline-flex h-2.5 w-2.5 rounded-full bg-amber-800/40"></span>
+                    <span>${index + 1}</span>
+                    <span class="hidden md:inline text-amber-900/80">${step.title}</span>
+                `;
+                progressButton.addEventListener('click', () => goToStep(index));
+                progressContainer.appendChild(progressButton);
+            });
+            updateUI();
+        }
+
+        function updateUI() {
+            stepContainer.style.transform = `translateX(-${currentStep * 100}%)`;
+
+            const progressItems = document.querySelectorAll('.progress-item');
+            progressItems.forEach((item, index) => {
+                const indicatorDot = item.querySelector('span:first-child');
+                const isActive = index === currentStep;
+                item.setAttribute('aria-current', isActive);
+                item.classList.toggle('bg-amber-200', isActive);
+                item.classList.toggle('text-amber-900', isActive);
+                indicatorDot.classList.toggle('bg-amber-800', isActive);
+                indicatorDot.classList.toggle('bg-amber-800/40', !isActive);
+            });
+            
+            stepCounter.textContent = `Step ${currentStep + 1} of ${pujaSteps.length}`;
+
+            prevBtn.classList.toggle('opacity-0', currentStep === 0);
+            prevBtn.classList.toggle('invisible', currentStep === 0);
+
+            nextBtn.classList.toggle('opacity-0', currentStep === pujaSteps.length - 1);
+            nextBtn.classList.toggle('invisible', currentStep === pujaSteps.length - 1);
+        }
+        
+        function goToStep(stepIndex) {
+            if (stepIndex >= 0 && stepIndex < pujaSteps.length) {
+                currentStep = stepIndex;
+                updateUI();
+                const activeProgress = document.querySelector('.progress-item[aria-current="true"]');
+                if (activeProgress) {
+                    activeProgress.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        }
+
+        nextBtn.addEventListener('click', () => goToStep(currentStep + 1));
+        prevBtn.addEventListener('click', () => goToStep(currentStep - 1));
+
+        let touchstartX = 0;
+        let touchendX = 0;
+        const swipeThreshold = 50;
+        const carousel = document.getElementById('steps-carousel');
+
+        carousel.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, { passive: true });
+        carousel.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            if (touchendX < touchstartX - swipeThreshold) { goToStep(currentStep + 1); }
+            if (touchendX > touchstartX + swipeThreshold) { goToStep(currentStep - 1); }
+        }, { passive: true });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight') {
+                goToStep(currentStep + 1);
+            }
+            if (e.key === 'ArrowLeft') {
+                goToStep(currentStep - 1);
+            }
+        });
+
+        renderSteps();
+    </script>
+</body>
+</html>
