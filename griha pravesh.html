@@ -21,7 +21,8 @@
         }
         .mantra {
             font-family: 'Tiro Devanagari Sanskrit', serif;
-            font-size: clamp(42px, 5vw, 64px);
+            font-size: clamp(28px, 4vw, 64px);
+            line-height: 1.5;
         }
         .step-container {
             transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
@@ -36,6 +37,12 @@
             border-radius: 24px;
             box-shadow: 0 24px 60px -18px rgba(120, 53, 15, 0.25);
             border: 1px solid rgba(120, 53, 15, 0.12);
+            margin-bottom: 6rem;
+        }
+        @media (min-width: 768px) {
+            .step-content {
+                margin-bottom: 0;
+            }
         }
         .step-title {
             font-size: clamp(2.3rem, 3vw, 3.2rem);
@@ -92,7 +99,7 @@
         </div>
 
         <!-- Steps Carousel -->
-        <div id="steps-carousel" class="flex-grow flex items-center justify-center overflow-hidden w-full px-3 pb-20 md:px-12">
+        <div id="steps-carousel" class="flex-grow flex items-center justify-center overflow-hidden w-full px-3 pb-6 md:pb-20 md:px-12">
             <div id="step-container" class="flex h-full w-full">
                 <!-- Steps will be inserted here by JS -->
             </div>
@@ -110,7 +117,7 @@
         </button>
     </div>
 
-    <div class="pointer-events-none absolute bottom-4 inset-x-0 flex justify-center px-6">
+    <div class="pointer-events-none absolute bottom-4 inset-x-0 justify-center px-6 hidden md:flex">
         <div class="pointer-events-auto bg-white/80 backdrop-blur-sm text-amber-900 text-sm md:text-base px-4 py-2 rounded-full shadow-md border border-amber-900/10 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             <span class="flex items-center gap-2"><span class="inline-flex h-3 w-3 rounded-full bg-amber-800"></span>Current step</span>
             <span>Swipe ◀ ▶ • Arrow keys • Tap buttons</span>
@@ -120,73 +127,94 @@
 
     <script>
         const pujaSteps = [
-            // --- Welcome ---
-            { part: "Welcome", title: "Griha Pravesam Guide", instruction: "This complete guide will walk you through your housewarming ceremony. Swipe or use the arrows to move to the next step when you are ready." },
-            
-            // --- Part 1: Preparation ---
-            { part: "Part 1: Preparation", title: "Set the Muhurta", instruction: "Ensure you have fixed an auspicious date and time (Muhurta) for entering the house." },
-            { part: "Part 1: Preparation", title: "Prepare the House", instruction: "The house should be clean, with only fixed items present. Decorate the main entrance with mango leaves, flowers, and a beautiful Rangoli." },
-            { part: "Part 1: Preparation", title: "Gather Puja Materials", instruction: "Arrange all your puja materials so they are easily accessible during the ceremony." },
-            
-            // --- Part 2: Entering the Home ---
-            { part: "Part 2: Entering the Home", title: "Assemble at the Entrance", instruction: "Gather the family outside the front door 15-20 minutes before the Muhurta. The lady of the house leads, carrying the Kalasam." },
-            
-            // --- Lakshmi Puja (16 Steps) ---
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja: Preliminaries", instruction: "At the main doorstep, begin the Lakshmi Puja. Perform Gurudhyanam, Ganapathi Dhyanam, Aachamanam, Praanayamam, and make the Samkalpam (vow)." },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (1/16): Dhyanam", instruction: "Meditate on the Goddess.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः ध्यायामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (2/16): Aavahanam", instruction: "Invite the Goddess.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः आवाहयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (3/16): Aasanam", instruction: "Offer a flower as a seat.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः आसनार्थे पुष्पाणि समर्पयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (4/16): Paadyam", instruction: "Offer water to wash the feet.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः पादयोः पाद्यं समर्पयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (5/16): Arghyam", instruction: "Offer water to wash the hands.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः हस्तयोः अर्घ्यं समर्पयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (6/16): Aachamaneeyam", instruction: "Offer water to sip.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः आचमनीयं समर्पयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (7/16): Panchaamrutha Snaanam", instruction: "Bathe with Panchaamrutham.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः पञ्चामृतस्नानं समर्पयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (8/16): Shuddhodaka Snaanam", instruction: "Bathe with pure water.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः शुद्धोदकस्नानं समर्पयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (9/16): Vastram", instruction: "Offer new clothes (or Akshatas).", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः वस्त्रार्थे अक्षतान् समर्पयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (10/16): Gandham", instruction: "Offer sandalwood paste.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः गन्धान् धारयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (11/16): Akshathaan", instruction: "Offer Akshatas.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः अक्षतान् समर्पयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (12/16): Pushpam", instruction: "Offer flowers.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः पुष्पैः पूजयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (13/16): Dhoopam", instruction: "Show incense.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः धूपं आघ्रापयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (14/16): Deepam", instruction: "Show the lamp.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः दीपं दर्शयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (15/16): Naivedyam", instruction: "Offer prasad.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः नैवेद्यं निवेदयामि" },
-            { part: "Part 2: Entering the Home", title: "Lakshmi Puja (16/16): Neerajanam", instruction: "Offer camphor flame (Aarathi).", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः नीराजनं समर्पयामि" },
-            
-            { part: "Part 2: Entering the Home", title: "The Grand Entry", instruction: "Exactly at the auspicious moment (Muhurta), enter the house with your right foot first and proceed to the kitchen." },
-            
-            // --- Part 3: The Kitchen Ritual ---
-            { part: "Part 3: The Kitchen Ritual", title: "Set up the Stove", instruction: "Place the stove in the southeast corner, positioned to face East. Decorate it." },
-            { part: "Part 3: The Kitchen Ritual", title: "Lighting the Sacred Fire", instruction: "The lady of the house should light the stove while chanting the full Agni Mantram.", mantra: "अग्निं दूतं वृणीमहे होतारं विश्ववेदसम् । अस्य यज्ञस्य सुक्रतुम् ॥ रां रीं रूं रैं रौं रः रमलवरयूं अग्निमण्डलाय नमः अग्निं आवहयामि ॥" },
-            { part: "Part 3: The Kitchen Ritual", title: "Place Vessel on Stove", instruction: "Place a new vessel on the stove while chanting the full Soorya Mantram.", mantra: "आ सत्येन रजसा वर्तमानो निवेशयन्नमृतं मर्त्यं च । हिरण्ययेन सविता रथेना देवो याति भुवनानि पश्यन् ॥ ह्रां ह्रीं ह्रूं ह्रैं ह्रौं ह्रः ह्रमलवरयूं सूर्याय नमः सूर्यं आवहयामि ॥" },
-            { part: "Part 3: The Kitchen Ritual", title: "Pouring the Milk", instruction: "Pour fresh milk into the vessel while chanting the full Soma (Chandra) Mantram.", mantra: "आप्यायस्व समेतु ते विश्वतः सोम वृष्णियम् । भवा वाजस्य संगथे ॥ सां सीं सूं सैं सौं सः समलवरयूं सोममण्डलाय नमः चन्द्रं आवहयामि ॥" },
-            { part: "Part 3: The Kitchen Ritual", title: "Boil & Overflow", instruction: "Allow the milk to boil and overflow. This signifies overflowing prosperity. Add rice or jaggery, offer to the deities, and distribute as prasad." },
-            
-            // --- Part 4: Puja Inside the House ---
-            { part: "Part 4: Puja Inside the House", title: "Set up the Puja Area", instruction: "In the northeast corner, set up a pedestal with the icons of the deities, primarily Lord Ganesha." },
+    // --- Part 1: Preparation ---
+    { part: "Welcome", title: "Griha Pravesam Guide", instruction: "This is a complete, step-by-step guide for your housewarming ceremony, including all mantras from the documents. Swipe or use the arrows to proceed." },
+    { part: "Part 1: Preparation", title: "Set the Muhurta", instruction: "Ensure you have fixed an auspicious date and time (Muhurta) for entering the house." },
+    { part: "Part 1: Preparation", title: "Prepare the House", instruction: "The house should be clean, with only fixed items present. Decorate the main entrance with mango leaves, flowers, and a beautiful Rangoli." },
+    { part: "Part 1: Preparation", title: "Gather Puja Materials", instruction: "Arrange all your puja materials so they are easily accessible. Check the list to ensure you have everything needed." },
+    
+    // --- Part 2: Entering the Home & Lakshmi Puja ---
+    { part: "Part 2: Entering the Home", title: "Assemble at the Entrance", instruction: "Gather the family outside the front door 15-20 minutes before the Muhurta. The lady of the house leads, carrying the Kalasam. Play auspicious chants." },
+    
+    // --- Lakshmi Puja Preliminaries ---
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Preliminaries (1/5): Gurudhyanam", instruction: "Begin with meditation on your Guru, seeking blessings to perform the puja correctly." },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Preliminaries (2/5): Ganapathi Dhyaanam", instruction: "Meditate on Lord Ganesha to remove any obstacles from the ceremony." },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Preliminaries (3/5): Aachamanam", instruction: "Perform the ritual sipping of water for internal purification." },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Preliminaries (4/5): Praanayamam", instruction: "Perform the ritual breathing exercise. Silently chant the Gayatri Mantra.", mantra: "ॐ भूर्भुवः स्वः\nतत्सवितुर्वरेण्यं\nभर्गो देवस्य धीमहि\nधियो यो नः प्रचोदयात् ॥" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Preliminaries (5/5): Samkalpam", instruction: "Take a flower and some akshatas in your hand and make the vow (Samkalpam), stating your purpose to perform the Griha Pravesam Lakshmi Puja." },
 
-            // --- Ganapati Puja (16 Steps) ---
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (1/16): Dhyanam", instruction: "Meditate on the Lord.", mantra: "ॐ श्री महागणाधिपतये नमः ध्यायामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (2/16): Aavahanam", instruction: "Invite the Lord.", mantra: "ॐ श्री महागणाधिपतये नमः आवाहयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (3/16): Aasanam", instruction: "Offer a flower as a seat.", mantra: "ॐ श्री महागणाधिपतये नमः आसनार्थे पुष्पाणि समर्पयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (4/16): Paadyam", instruction: "Offer water to wash the feet.", mantra: "ॐ श्री महागणाधिपतये नमः पादयोः पाद्यं समर्पयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (5/16): Arghyam", instruction: "Offer water to wash the hands.", mantra: "ॐ श्री महागणाधिपतये नमः हस्तयोः अर्घ्यं समर्पयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (6/16): Aachamaneeyam", instruction: "Offer water to sip.", mantra: "ॐ श्री महागणाधिपतये नमः आचमनीयं समर्पयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (7/16): Panchaamrutha Snaanam", instruction: "Bathe with Panchaamrutham.", mantra: "ॐ श्री महागणाधिपतये नमः पञ्चामृतस्नानं समर्पयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (8/16): Shuddhodaka Snaanam", instruction: "Bathe with pure water.", mantra: "ॐ श्री महागणाधिपतये नमः शुद्धोदकस्नानं समर्पयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (9/16): Vastram", instruction: "Offer new clothes (or Akshatas).", mantra: "ॐ श्री महागणाधिपतये नमः वस्त्रार्थे अक्षतान् समर्पयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (10/16): Gandham", instruction: "Offer sandalwood paste.", mantra: "ॐ श्री महागणाधिपतये नमः गन्धान् धारयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (11/16): Akshathaan", instruction: "Offer Akshatas.", mantra: "ॐ श्री महागणाधिपतये नमः अक्षतान् समर्पयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (12/16): Pushpam", instruction: "Offer flowers.", mantra: "ॐ श्री महागणाधिपतये नमः पुष्पैः पूजयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (13/16): Dhoopam", instruction: "Show incense.", mantra: "ॐ श्री महागणाधिपतये नमः धूपं आघ्रापयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (14/16): Deepam", instruction: "Show the lamp.", mantra: "ॐ श्री महागणाधिपतये नमः दीपं दर्शयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (15/16): Naivedyam", instruction: "Offer prasad.", mantra: "ॐ श्री महागणाधिपतये नमः नैवेद्यं निवेदयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Ganapati Puja (16/16): Neerajanam", instruction: "Offer camphor flame (Aarathi).", mantra: "ॐ श्री महागणाधिपतये नमः नीराजनं समर्पयामि" },
-            { part: "Part 4: Puja Inside the House", title: "Navagraha Puja (Optional)", instruction: "You may now perform a simple Navagraha puja by chanting the basic mantras for each of the nine planets." },
+    // --- Lakshmi Puja 16 Steps ---
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 1/16: Dhyanam", instruction: "Meditate on the Goddess.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः ध्यायामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 2/16: Aavahanam", instruction: "Invite the Goddess.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः आवाहयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 3/16: Aasanam", instruction: "Offer a flower as a seat.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः आसनार्थे पुष्पाणि समर्पयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 4/16: Paadyam", instruction: "Offer water to wash the feet.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः पादयोः पाद्यं समर्पयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 5/16: Arghyam", instruction: "Offer water to wash the hands.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः हस्तयोः अर्घ्यं समर्पयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 6/16: Aachamaneeyam", instruction: "Offer water to sip.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः आचमनीयं समर्पयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 7/16: Panchaamrutha Snaanam", instruction: "Bathe with Panchaamrutham.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः पञ्चामृतस्नानं समर्पयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 8/16: Shuddhodaka Snaanam", instruction: "Bathe with pure water.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः शुद्धोदकस्नानं समर्पयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 9/16: Vastram", instruction: "Offer new clothes (or Akshatas).", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः वस्त्रार्थे अक्षतान् समर्पयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 10/16: Gandham", instruction: "Offer sandalwood paste.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः गन्धान् धारयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 11/16: Akshathaan", instruction: "Offer Akshatas.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः अक्षतान् समर्पयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 12/16: Pushpam", instruction: "Offer flowers.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः पुष्पैः पूजयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 13/16: Dhoopam", instruction: "Show incense.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः धूपं आघ्रापयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 14/16: Deepam", instruction: "Show the lamp.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः दीपं दर्शयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 15/16: Naivedyam", instruction: "Offer prasad.", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः नैवेद्यं निवेदयामि" },
+    { part: "Part 2: Lakshmi Puja at Doorstep", title: "Step 16/16: Neerajanam", instruction: "Offer camphor flame (Aarathi).", mantra: "ॐ श्री महालक्ष्मी-देवतायै नमः नीराजनं समर्पयामि" },
+    { part: "Part 2: Entering the Home", title: "The Grand Entry", instruction: "Exactly at the auspicious moment (Muhurta), enter the house with your right foot first and proceed to the kitchen." },
+    
+    // --- Part 3: The Kitchen Ritual ---
+    { part: "Part 3: The Kitchen Ritual", title: "Set up the Stove", instruction: "Place the stove in the southeast corner, positioned to face East. Decorate it." },
+    { part: "Part 3: The Kitchen Ritual", title: "Lighting the Sacred Fire", instruction: "The lady of the house should light the stove while chanting the full Agni Mantram.", mantra: "अग्निं दूतं वृणीमहे होतारं विश्ववेदसम् । अस्य यज्ञस्य सुक्रतुम् ॥ रां रीं रूं रैं रौं रः रमलवरयूं अग्निमण्डलाय नमः अग्निं आवहयामि ॥" },
+    { part: "Part 3: The Kitchen Ritual", title: "Place Vessel on Stove", instruction: "Place a new vessel on the stove while chanting the full Soorya Mantram.", mantra: "आ सत्येन रजसा वर्तमानो निवेशयन्नमृतं मर्त्यं च । हिरण्ययेन सविता रथेना देवो याति भुवनानि पश्यन् ॥ ह्रां ह्रीं ह्रूं ह्रैं ह्रौं ह्रः ह्रमलवरयूं सूर्याय नमः सूर्यं आवहयामि ॥" },
+    { part: "Part 3: The Kitchen Ritual", title: "Pouring the Milk", instruction: "Pour fresh milk into the vessel while chanting the full Soma (Chandra) Mantram.", mantra: "आप्यायस्व समेतु ते विश्वतः सोम वृष्णियम् । भवा वाजस्य संगथे ॥ सां सीं सूं सैं सौं सः समलवरयूं सोममण्डलाय नमः चन्द्रं आवहयामि ॥" },
+    { part: "Part 3: The Kitchen Ritual", title: "Boil & Overflow", instruction: "Allow the milk to boil and overflow. This signifies overflowing prosperity. Add rice or jaggery, offer to the deities, and distribute as prasad." },
+    
+    // --- Part 4: Puja Inside the House ---
+    { part: "Part 4: Puja Inside", title: "Set up the Puja Area", instruction: "In the northeast corner, set up a pedestal with the icons of the deities, primarily Lord Ganesha." },
+    
+    // --- Ganapati Puja Preliminaries ---
+    { part: "Part 4: Ganapati Puja", title: "Preliminaries (1/5): Gurudhyanam", instruction: "Begin with meditation on your Guru, seeking blessings to perform the puja correctly." },
+    { part: "Part 4: Ganapati Puja", title: "Preliminaries (2/5): Ganapathi Dhyaanam", instruction: "Meditate on Lord Ganesha to remove any obstacles from the ceremony." },
+    { part: "Part 4: Ganapati Puja", title: "Preliminaries (3/5): Aachamanam", instruction: "Perform the ritual sipping of water for internal purification." },
+    { part: "Part 4: Ganapati Puja", title: "Preliminaries (4/5): Praanayamam", instruction: "Perform the ritual breathing exercise. Silently chant the Gayatri Mantra.", mantra: "ॐ भूर्भुवः स्वः\nतत्सवितुर्वरेण्यं\nभर्गो देवस्य धीमहि\nधियो यो नः प्रचोदयात् ॥" },
+    { part: "Part 4: Ganapati Puja", title: "Preliminaries (5/5): Samkalpam", instruction: "Take a flower and some akshatas in your hand and make the vow (Samkalpam), stating your purpose to perform the Ganapati Puja for the new home." },
 
-            // --- Part 5: Concluding the Ceremony ---
-            { part: "Part 5: Concluding", title: "Dispelling Negative Energy", instruction: "Take a coconut or pumpkin and move it clockwise (3 times) around the exit door frames while chanting.", mantra: "ॐ ह्रीं सर्व विघ्न कृद्भ्यो सर्व भूतेभ्यो हुं फट् स्वाहा ॥" },
-            { part: "Part 5: Concluding", title: "Break the Coconut", instruction: "After chanting, take the coconut/pumpkin outside and break it. Do not bring the broken pieces back inside." },
-            { part: "Part 5: Concluding", title: "Final Steps", instruction: "Sprinkle holy water from the Kalasam in all rooms. Conclude with a final Aarathi and enjoy the prasad with your family." },
-            { part: "Congratulations!", title: "Puja Complete!", instruction: "Congratulations on your new home! May it be filled with peace, prosperity, and happiness. It is auspicious to stay in the new house overnight." },
-        ];
+    // --- Ganapati Puja 16 Steps ---
+    { part: "Part 4: Ganapati Puja", title: "Step 1/16: Dhyanam", instruction: "Meditate on the Lord.", mantra: "ॐ श्री महागणाधिपतये नमः ध्यायामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 2/16: Aavahanam", instruction: "Invite the Lord.", mantra: "ॐ श्री महागणाधिपतये नमः आवाहयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 3/16: Aasanam", instruction: "Offer a flower as a seat.", mantra: "ॐ श्री महागणाधिपतये नमः आसनार्थे पुष्पाणि समर्पयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 4/16: Paadyam", instruction: "Offer water to wash the feet.", mantra: "ॐ श्री महागणाधिपतये नमः पादयोः पाद्यं समर्पयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 5/16: Arghyam", instruction: "Offer water to wash the hands.", mantra: "ॐ श्री महागणाधिपतये नमः हस्तयोः अर्घ्यं समर्पयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 6/16: Aachamaneeyam", instruction: "Offer water to sip.", mantra: "ॐ श्री महागणाधिपतये नमः आचमनीयं समर्पयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 7/16: Panchaamrutha Snaanam", instruction: "Bathe with Panchaamrutham.", mantra: "ॐ श्री महागणाधिपतये नमः पञ्चामृतस्नानं समर्पयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 8/16: Shuddhodaka Snaanam", instruction: "Bathe with pure water.", mantra: "ॐ श्री महागणाधिपतये नमः शुद्धोदकस्नानं समर्पयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 9/16: Vastram", instruction: "Offer new clothes (or Akshatas).", mantra: "ॐ श्री महागणाधिपतये नमः वस्त्रार्थे अक्षतान् समर्पयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 10/16: Gandham", instruction: "Offer sandalwood paste.", mantra: "ॐ श्री महागणाधिपतये नमः गन्धान् धारयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 11/16: Akshathaan", instruction: "Offer Akshatas.", mantra: "ॐ श्री महागणाधिपतये नमः अक्षतान् समर्पयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 12/16: Pushpam", instruction: "Offer flowers.", mantra: "ॐ श्री महागणाधिपतये नमः पुष्पैः पूजयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 13/16: Dhoopam", instruction: "Show incense.", mantra: "ॐ श्री महागणाधिपतये नमः धूपं आघ्रापयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 14/16: Deepam", instruction: "Show the lamp.", mantra: "ॐ श्री महागणाधिपतये नमः दीपं दर्शयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 15/16: Naivedyam", instruction: "Offer prasad.", mantra: "ॐ श्री महागणाधिपतये नमः नैवेद्यं निवेदयामि" },
+    { part: "Part 4: Ganapati Puja", title: "Step 16/16: Neerajanam", instruction: "Offer camphor flame (Aarathi).", mantra: "ॐ श्री महागणाधिपतये नमः नीराजनं समर्पयामि" },
+
+    // --- Navagraha Puja ---
+    { part: "Part 4: Navagraha Puja", title: "Introduction", instruction: "Now, perform the Navagraha Puja by chanting the mantra for each of the nine planets." },
+    { part: "Part 4: Navagraha Puja", title: "1/9: Surya (Sun)", instruction: "Chant the mantra for the Sun.", mantra: "ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः ॥" },
+    { part: "Part 4: Navagraha Puja", title: "2/9: Chandra (Moon)", instruction: "Chant the mantra for the Moon.", mantra: "ॐ श्रां श्रीं श्रौं सः चंद्रमसे नमः ॥" },
+    { part: "Part 4: Navagraha Puja", title: "3/9: Mangala (Mars)", instruction: "Chant the mantra for Mars.", mantra: "ॐ क्रां क्रीं क्रौं सः भौमाय नमः ॥" },
+    { part: "Part 4: Navagraha Puja", title: "4/9: Budha (Mercury)", instruction: "Chant the mantra for Mercury.", mantra: "ॐ ब्रां ब्रीं ब्रौं सः बुधाय नमः ॥" },
+    { part: "Part 4: Navagraha Puja", title: "5/9: Guru (Jupiter)", instruction: "Chant the mantra for Jupiter.", mantra: "ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः ॥" },
+    { part: "Part 4: Navagraha Puja", title: "6/9: Shukra (Venus)", instruction: "Chant the mantra for Venus.", mantra: "ॐ द्रां द्रीं द्रौं सः शुक्राय नमः ॥" },
+    { part: "Part 4: Navagraha Puja", title: "7/9: Shani (Saturn)", instruction: "Chant the mantra for Saturn.", mantra: "ॐ प्रां प्रीं प्रौं सः शनैश्चराय नमः ॥" },
+    { part: "Part 4: Navagraha Puja", title: "8/9: Rahu", instruction: "Chant the mantra for Rahu.", mantra: "ॐ भ्रां भ्रीं भ्रौं सः राहवे नमः ॥" },
+    { part: "Part 4: Navagraha Puja", title: "9/9: Ketu", instruction: "Chant the mantra for Ketu.", mantra: "ॐ स्रां स्रीं स्रौं सः केतवे नमः ॥" },
+
+    // --- Part 5: Concluding the Ceremony ---
+    { part: "Part 5: Concluding", title: "Dispelling Negative Energy", instruction: "Take a coconut or pumpkin and move it clockwise (3 times) around the exit door frames while chanting the Vighna Hara Mantram.", mantra: "ॐ ह्रीं सर्व विघ्न कृद्भ्यो सर्व भूतेभ्यो हुं फट् स्वाहा ॥" },
+    { part: "Part 5: Concluding", title: "Break the Coconut", instruction: "After chanting, take the coconut/pumpkin outside and break it. Do not bring the broken pieces back inside." },
+    { part: "Part 5: Concluding", title: "Final Steps", instruction: "Sprinkle holy water from the Kalasam in all rooms using a mango leaf. Conclude with a final Aarathi and enjoy the prasad with your family." },
+    { part: "Congratulations!", title: "Puja Complete!", instruction: "Congratulations on your new home! May it be filled with peace, prosperity, and happiness. It is auspicious to stay in the new house overnight." },
+];
 
         let currentStep = 0;
         const stepContainer = document.getElementById('step-container');
@@ -206,8 +234,8 @@
                         <p class="text-sm md:text-base font-semibold text-amber-600 mb-4 tracking-wide uppercase">${step.part}</p>
                         <h2 class="step-title font-bold text-amber-900 mb-6">${step.title}</h2>
                         <p class="step-text text-amber-800 mb-6">${step.instruction}</p>
-                        ${step.mantra ? `<div class="bg-amber-100/90 p-6 md:p-8 rounded-2xl shadow-inner border border-amber-900/10">
-                                            <p class="mantra text-amber-900 leading-snug text-center">${step.mantra}</p>
+                        ${step.mantra ? `<div class="bg-amber-100/90 p-4 md:p-8 rounded-2xl shadow-inner border border-amber-900/10 max-h-[40vh] overflow-y-auto">
+                                            <p class="mantra text-amber-900 text-center">${step.mantra}</p>
                                          </div>` : ''}
                     </article>
                 `;
